@@ -1,0 +1,1 @@
+Please download a vosk model in internet and find this 'vosk-model-tl-ph-generic-0.6'
