@@ -5,7 +5,7 @@
         "building picture": "pictures/501 .jpg",
         "floor picture": "pictures/Ground Floor .jpg",
         "brief information": [
-            "This room is a stock room.",
+            "This room is a stock room where the items in Osmena items.",
             10
         ],
         "directions": [
@@ -37,7 +37,7 @@
             24
         ],
         "directions": [
-            "Here are the step to find 501 Room; \n\n1.Enter Red Building \n2. Go to 2nd Floor where Room 502 located",
+            "Here are the step to find 502 Room; \n\n1.Enter Red Building \n2. Go to 2nd Floor where Room 502 located",
             9
         ]
     },
