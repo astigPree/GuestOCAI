@@ -111,6 +111,7 @@ MainWindow:
 
     username : username
     password : password
+    warning_label : warning_label
 
     BoxLayout:
         size_hint : 0.5 , 0.5
@@ -177,7 +178,11 @@ MainWindow:
             spacing : dp(10)
 
             Label:
+                id : warning_label
                 size_hint : 0.5 , 1
+                color : chex('dabbbb')
+                text : "INCORRECT INPUT!, Please put incorrect data"
+                font_size : sp(19)
 
 
             BoxLayout:

@@ -61,8 +61,11 @@ class LocationScreenInformation(Screen) :
 
     def updateOnlyTeacherScreen(self) :
         # TODO: Update the screen if it TEACHER Screen
-        current_time = datetime.now()
-        if self.parent and self.screen_id and not self.isRoom :
+        # current_time = datetime.now()
+        # if self.parent and self.screen_id and not self.isRoom :
+
+        if self.parent and not self.isRoom :
+            current_time = datetime.now()
             for name, time_start, time_end, day in self.teacher_time :
                 if current_time.weekday() == day: # Check if the current day is the saved day
                     if time_start.hour <= current_time.hour <= time_end.hour :  # Check if the current hour in the hour range
@@ -87,23 +90,35 @@ class LocationScreenInformation(Screen) :
         if isRoom :
             # TODO: Display the needed data for rooms
             self.image1.locationName.text = data["name"]
-            self.image1.locationImage.source = data["building picture"]
             self.image2.locationName.text = data["floor"]
-            self.image2.locationImage.source = data["floor picture"]
             self.information.info.text = data["brief information"][0]
             self.directions.info.text = data["directions"][0]
+
+            if self.image1.locationImage.source != data["building picture"]:
+                self.image1.locationImage.source = data["building picture"]
+            if self.image2.locationImage.source != data["floor picture"]:
+                self.image2.locationImage.source = data["floor picture"]
+
         else :
             # TODO: Display the needed data for teacher
-            self.image1.locationName.text = data["person"]
-            self.image1.locationImage.source = data["picture"]
-            self.information.info.text = data["information"]
-            for location, overall_time in data["locations"].items() :
-                for time_in_room in overall_time :
-                    time_in_room, day = time_in_room.split(self.time_day_splitter)
-                    time_start, time_end = time_in_room.split(self.time_split_letter)
-                    time_start = self.time_parser(time_start, self.time_format)
-                    time_end = self.time_parser(time_end, self.time_format)
-                    self.teacher_time.append((location, time_start, time_end , int(day)))
+            if self.image1.locationName.text != data["person"]:
+                self.image1.locationName.text = data["person"]
+            if self.image1.locationImage.source != data["picture"]:
+                self.image1.locationImage.source = data["picture"]
+            if self.information.info.text != data["information"] :
+                self.information.info.text = data["information"]
+
+            if self.teacher_time:
+                self.teacher_time.clear()
+
+            if data['locations']:
+                for location, overall_time in data["locations"].items() :
+                    for time_in_room in overall_time :
+                        time_in_room, day = time_in_room.split(self.time_day_splitter)
+                        time_start, time_end = time_in_room.split(self.time_split_letter)
+                        time_start = self.time_parser(time_start, self.time_format)
+                        time_end = self.time_parser(time_end, self.time_format)
+                        self.teacher_time.append((location, time_start, time_end , int(day)))
 
 
 class GuestScreen(Screen) :
@@ -115,7 +130,7 @@ class GuestScreen(Screen) :
     is_screen_is_room : dict = DictProperty({}) # screen_name = bool
 
     __okey_to_animate = True
-    __changing_speed = 15
+    __changing_speed = 3
 
     index_of_screen : int = NumericProperty(0) # Represent What Screen to display
     index_of_content_screen : int = NumericProperty(0) # Represent What content to show
@@ -178,9 +193,10 @@ class GuestScreen(Screen) :
 
         hidden_screen_name = self.preview_screens_names[self.index_of_screen]
         hidden_screen : LocationScreenInformation = self.screens_handler.get_screen(hidden_screen_name)
-        hidden_screen.updateScreen(data=self.screens_data[self.screens_names[self.index_of_content_screen]] ,
-                                   isRoom=self.is_screen_is_room[self.screens_names[self.index_of_content_screen]],
-                                   key=self.screens_names[self.index_of_content_screen])
+        key = self.screens_names[self.index_of_content_screen]
+        data = self.screens_data[key]
+        isRoom = self.is_screen_is_room[key]
+        hidden_screen.updateScreen(data=data , isRoom=isRoom, key=key)
 
         self.screens_handler.current = self.preview_screens_names[self.index_of_screen]
         self.changing_screen_event = Clock.schedule_once(self.animateChangingScreens , self.__changing_speed)

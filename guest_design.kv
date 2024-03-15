@@ -1,0 +1,153 @@
+
+#:import screenTransition kivy.uix.screenmanager.WipeTransition
+
+# ------------------------ Guest Screens ----------------------
+<LocationImageContainer>:
+    orientation : 'vertical'
+    locationName : locationName
+    locationImage : locationImage
+    on_parent:
+        self.spacing = min(self.size) * 0.03
+    on_size:
+        self.spacing = min(self.size) * 0.03
+
+    BoxLayout :
+        size_hint : 1 , 0.8
+        padding : [ dp(20) , dp(10) , dp(20) , dp(10) ]
+        canvas.before:
+            Color:
+                rgba : chex('f0f3f4')
+            RoundedRectangle:
+                pos : self.pos
+                size : self.size
+                radius : ( min(self.size) * 0.05, )
+
+        Image:
+            id : locationImage
+            allow_stretch : True
+            keep_ratio : False
+
+    Label:
+        id : locationName
+        size_hint : 1 , 0.2
+        text : "ROOM 501"
+        font_name : 'title_font'
+        color : chex('f0f3f4')
+        on_parent:
+            self.font_size = ( min(self.size) * 0.67 ) - ( len(self.text) * 0.4) if len(self.text) > 10 else (min(self.size) * 0.5 )
+        on_size:
+            self.font_size = ( min(self.size) * 0.67 ) - ( len(self.text) * 0.4) if len(self.text) > 10 else (min(self.size) * 0.5 )
+
+
+<LocationInformationContainer>:
+    orientation: 'vertical'
+    spacing : dp(5)
+
+    title : title
+    info : info
+
+    canvas.before:
+        Color:
+            rgba : chex('f0f3f4')
+        RoundedRectangle:
+            pos : self.pos
+            size : self.size
+            radius : ( min(self.size) * 0.05, )
+
+    Label:
+        id : title
+        size_hint : 1 , None
+        text : "DIRECTIONS"
+        font_name : "title_font"
+        color : chex("620609")
+        height : self.texture_size[1] + ( min(root.size)  * 0.1 )
+
+        on_size:
+            self.height = self.texture_size[1] + ( min(root.size)  * 0.1 )
+            self.font_size = min(root.size) * 0.1
+
+        canvas.before:
+            Color:
+                rgba : chex("dabbbb")
+            RoundedRectangle:
+                pos : self.pos
+                size : self.size
+                radius : ( min(self.parent.size) * 0.05, )
+
+    ScrollView:
+        MDGridLayout:
+            adaptive_height : True
+            cols : 1
+            padding : [ dp(5) , dp(0) , dp(5) , dp(0) ]
+
+            Label:
+                id : info
+                size_hint : 1 , None
+                font_name : "content_font"
+                height: self.texture_size[1]
+                text_size: self.width, None
+                color : chex("620609")
+                markup : True
+                on_parent:
+                    self.font_size = min(root.size) * 0.07
+                on_size:
+                    self.font_size = min(root.size) * 0.07
+
+
+
+<LocationScreenInformation>:
+    opacity : 0
+    image1 : image1
+    image2 : image2
+    directions : directions
+    information : information
+
+    canvas.before:
+        Color:
+            rgba : chex('#620609')
+        RoundedRectangle:
+            pos: self.pos
+            size : self.size
+            radius : ( min(self.size) * 0.030 ,)
+
+    FloatLayout:
+
+        BoxLayout:
+            orientation : 'vertical'
+            pos_hint : { "x" : 0.08 , "center_y" : 0.5 }
+            size_hint : 0.5 , 0.92
+            on_parent:
+                spacing = min(self.size) * 0.04
+            on_size:
+                spacing = min(self.size) * 0.04
+
+            LocationImageContainer:
+                id : image1
+                size_hint : 0.5 , 1
+
+
+            LocationImageContainer:
+                id : image2
+                size_hint : 0.5 , 1
+
+        LocationInformationContainer:
+            id : directions
+            pos_hint : { "x" : 0.4 , "center_y" : 0.5}
+            size_hint : 0.26 , 0.9
+
+        LocationInformationContainer:
+            id : information
+            pos_hint : { "x" : 0.68 , "center_y" : 0.5}
+            size_hint : 0.26 , 0.9
+
+
+<GuestScreen>:
+
+    screens_handler : screens_handler
+
+    ScreenManager:
+        transition : screenTransition(clearcolor=[1 , 1 , 1 , 0 ])
+        id : screens_handler
+
+
+

@@ -170,8 +170,8 @@ class MainWindow(FloatLayout) :
         try :
             speed = talking_time / len(self.__ai_talking)
         except ZeroDivisionError as e:
-            speed = 5
-            print(f"Error in animateDisplayTalking : {e}")
+            speed = 3
+            print(f"Error in animateDisplayTalking : {e} = {talking_time} / {len(self.__ai_talking)}")
         Clock.schedule_once(lambda x : Animate(speed), speed)
 
     def updateAITalking(self, text : str , talking_speed : int):
