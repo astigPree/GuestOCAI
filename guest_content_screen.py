@@ -39,6 +39,8 @@ class LocationScreenInformation(Screen) :
     time_day_splitter = "/"
     teacher_time: list[[str, datetime, datetime], ...] = ListProperty([])
 
+    current_directions : str = StringProperty("") # Use to set new directions to control the delay
+
     # Data Structure teacher_time : [ (room, time_start , time_end, day ) , ]
 
     def on_kv_post(self, base_widget) :
@@ -57,7 +59,9 @@ class LocationScreenInformation(Screen) :
         if self.isRoom :
             return {"directions" : self.__data["directions"]}
         else :
-            return {"directions" : [self.directions.info.text, 9]}
+            while not self.current_directions:
+                pass
+            return {"directions" : [self.current_directions, 9]}
 
     def updateOnlyTeacherScreen(self) :
         # TODO: Update the screen if it TEACHER Screen
@@ -75,6 +79,7 @@ class LocationScreenInformation(Screen) :
                             self.image2.locationImage.source = room_data["building picture"]
                             self.image2.locationName.text = room_data["name"]
                             self.directions.info.text = room_data["directions"][0]
+                            self.current_directions = room_data["directions"][0]
                         break
             else :
                 # TODO: Set new location screen for teacher if no specified room
@@ -82,6 +87,7 @@ class LocationScreenInformation(Screen) :
                 self.image2.locationImage.source = room_data["building picture"]
                 self.image2.locationName.text = room_data["name"]
                 self.directions.info.text = room_data["directions"][0]
+                self.current_directions = room_data["directions"][0]
 
     def updateScreen(self, data: dict, isRoom: bool, key: str) :
         self.__data = data
@@ -93,24 +99,20 @@ class LocationScreenInformation(Screen) :
             self.image2.locationName.text = data["floor"]
             self.information.info.text = data["brief information"][0]
             self.directions.info.text = data["directions"][0]
-
-            if self.image1.locationImage.source != data["building picture"]:
-                self.image1.locationImage.source = data["building picture"]
-            if self.image2.locationImage.source != data["floor picture"]:
-                self.image2.locationImage.source = data["floor picture"]
+            self.image1.locationImage.source = data["building picture"]
+            self.image2.locationImage.source = data["floor picture"]
 
         else :
             # TODO: Display the needed data for teacher
-            if self.image1.locationName.text != data["person"]:
-                self.image1.locationName.text = data["person"]
-            if self.image1.locationImage.source != data["picture"]:
-                self.image1.locationImage.source = data["picture"]
-            if self.information.info.text != data["information"] :
-                self.information.info.text = data["information"]
+            self.image1.locationName.text = data["person"]
+            self.image1.locationImage.source = data["picture"]
+            self.information.info.text = data["information"]
 
-            if self.teacher_time:
-                self.teacher_time.clear()
+            print("===========================================")
+            print(f"Teacher : {data['person']}")
 
+            self.teacher_time.clear()
+            self.current_directions = ""
             if data['locations']:
                 for location, overall_time in data["locations"].items() :
                     for time_in_room in overall_time :
@@ -130,7 +132,7 @@ class GuestScreen(Screen) :
     is_screen_is_room : dict = DictProperty({}) # screen_name = bool
 
     __okey_to_animate = True
-    __changing_speed = 3
+    __changing_speed = 15
 
     index_of_screen : int = NumericProperty(0) # Represent What Screen to display
     index_of_content_screen : int = NumericProperty(0) # Represent What content to show
@@ -155,8 +157,7 @@ class GuestScreen(Screen) :
         self.screens_handler.current = preview_screen
 
     def okeyToChangeScreen(self) :
-        if not self.__okey_to_animate:
-            self.__okey_to_animate = True
+        self.__okey_to_animate = True
 
     def loadScreen(self, *args):
         self.main_event = Clock.schedule_interval(self.update_activity, 1 / 30)
@@ -205,18 +206,7 @@ class GuestScreen(Screen) :
         if self.__okey_to_animate :
             self.changing_screen_event = Clock.schedule_once(self.animate, self.__changing_speed)
         else :
-            self.changing_screen_event = Clock.schedule_once(self.animateChangingScreens , 1 )
-
-    def controlVariables(self, okey_to_animate=None, changing_speed=None) :
-        if okey_to_animate is not None :
-            self.__okey_to_animate = okey_to_animate
-        if changing_speed is not None :
-            self.__changing_speed = changing_speed
-
-    def on_leave(self, *args):
-        self.__okey_to_animate = False
-        Clock.unschedule(self.main_event)
-        Clock.unschedule(self.changing_screen_event)
+            self.changing_screen_event = Clock.schedule_once(self.animateChangingScreens , 3 )
 
     def getDataFromKey(self , name : str) -> dict:
         if self.is_screen_is_room.get(name) :
