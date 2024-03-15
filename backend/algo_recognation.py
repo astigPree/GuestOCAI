@@ -1,4 +1,4 @@
-import re, pickle, json, os, typing, random
+import re, pickle, json, os, typing, random , datetime
 
 
 def whatScreen(self, system_data : dict[str : [str , str]] , user_input : tuple[str, str] ) -> typing.Union[None , str]:
@@ -28,6 +28,10 @@ def loadNeededData(filename: str, folder=None, isBytes=False) -> dict :
 
 def recognizeAlgo(self: object) -> typing.NoReturn :
 
+    import ctypes
+    # Prevent Windows from going to sleep
+    ctypes.windll.kernel32.SetThreadExecutionState(0x80000002)  # ES_CONTINUOUS | ES_SYSTEM_REQUIRED
+
     # threading.stack_size() # Pinaka importante sa lag
 
     # return  # TODO: Debugging Only For UI
@@ -48,6 +52,9 @@ def recognizeAlgo(self: object) -> typing.NoReturn :
     cant_find_responses = loadNeededData( 'cant_find_responses.json' , 'wise_data')
     print("[/] LOAD ALL NEEDED DATA")
 
+    # TODO: create filename for incoming new training data
+    file = f"new_data {datetime.datetime.now().strftime('%m-%d-%Y')}.csv"
+
     # TODO: create a loop variables
     person_found = []
     room_found = []
@@ -63,21 +70,20 @@ def recognizeAlgo(self: object) -> typing.NoReturn :
         if self.stop_all_running: # Use to stop the program activity
             break
 
+        self.okeyToChangeScreen() # Use to delay the changing screen
+
         # TODO:  Check if the text is not error
         if not text :
             continue
 
-        text = text.replace("<unk>", "") + " "  # Add Space for identifying what room it is
+        text = text + " "  # Add Space for identifying what room it is
 
         # TODO:  Check if the finding in the text using NLP and Regex Operation
 
         # TODO: Check if what the text means using machine learning
         predicted = model.predict([text])
-        self.okeyToChangeScreen() # Use to delay the changing screen
         if predicted[0] == 1 :
             print(f"Predicted -------------------------")
-
-            text = text + " " # Add Space for identifying what room it is
 
             # TODO:  Check if the finding in the text
 
@@ -95,6 +101,7 @@ def recognizeAlgo(self: object) -> typing.NoReturn :
                     self.activity.text = "TALKING"
                     data = self.getGuestScreenData(person)
                     print(f"Person : {person}")
+                    print(f"Directions : {data['directions'][0]}")
                     self.updateAITalking(data['directions'][0], data['directions'][1])
                     # BackEnd action
                     mouth.talk(data["directions"][0])
@@ -127,6 +134,10 @@ def recognizeAlgo(self: object) -> typing.NoReturn :
             person_found.clear()
             room_found.clear()
 
+            # TODO: Save new data for new learning
+            intent = "wheres"
+            saveText(file, intent, text)
+
         else :
             # TODO: tell the user can't understand what user talking
             print(f"Not Predicted -------------------------")
@@ -135,5 +146,7 @@ def recognizeAlgo(self: object) -> typing.NoReturn :
                 "My functions only guiding the location in this building, I cant understand what are you talking.", 5)
             mouth.talk("My functions only guiding the location in this building, I cant understand what are you talking")
 
+            intent = "invalid"
+            saveText(file, intent, text)
 
     ear.closeMicrophone()
