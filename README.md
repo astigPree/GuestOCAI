@@ -8,7 +8,7 @@ To use RoomFinder, simply speak your queries into the application. It will proce
 
 ## Images
 ### Main Content
-![Application Interface](App_Images/content.jpg)
+![Application Interface](App_Images/content.png)
 
 ## Technology Stack
 - **Programming Language:** Python
