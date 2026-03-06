@@ -105,8 +105,8 @@ Future improvements for this project may include:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/roomfinder.git
-cd roomfinder
+git clone https://github.com/astigPree/GuestOCAI.git
+cd GuestOCAI
 ```
 
 ### 2. Install Dependencies
