@@ -110,15 +110,6 @@ cd roomfinder
 ```
 
 ### 2. Install Dependencies
-
-If you have a requirements file:
-
-```bash
-pip install -r requirements.txt
-```
-
-Or install manually:
-
 ```bash
 pip install kivy kivymd scikit-learn pyaudio speechrecognition pyttsx3
 ```
